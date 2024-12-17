@@ -1,0 +1,42 @@
+const { SlashCommandBuilder } = require('discord.js');
+const OpenAI = require('openai');
+
+// Initialisation de l'API OpenAI
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // Stocke ta clé API dans une variable d'environnement pour la sécurité
+});
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('gpt')
+        .setDescription('Pose une question à ChatGPT')
+        .addStringOption(option =>
+            option.setName('question')
+                .setDescription('La question à poser à ChatGPT')
+                .setRequired(true)),
+
+    async execute(interaction) {
+        // Récupère la question de l'utilisateur
+        const userQuestion = interaction.options.getString('question');
+
+        await interaction.deferReply(); // Permet au bot de prendre du temps pour répondre sans délai
+
+        try {
+            // Appel à l'API OpenAI
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o-mini', // Utilise le modèle de ton choix
+                messages: [
+                    { role: 'user', content: userQuestion },
+                ],
+            });
+
+            const gptResponse = completion.choices[0].message.content;
+
+            // Envoie la réponse de l'API à l'utilisateur
+            await interaction.editReply(gptResponse);
+        } catch (error) {
+            console.error(error);
+            await interaction.editReply('❌ Une erreur est survenue lors de l\'appel à ChatGPT.');
+        }
+    },
+};
