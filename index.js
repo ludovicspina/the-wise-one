@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const {Client, Events, GatewayIntentBits, Collection} = require('discord.js');
+const {Client, Events, GatewayIntentBits, Collection, AttachmentBuilder} = require('discord.js');
 const sequelize = require('./database/database');
 const User = require('./database/models/User');
 const foldersPath = path.join(__dirname, 'features');
@@ -44,7 +44,6 @@ for (const folder of commandFolders) {
     }
 }
 
-
 // Vérification des interactions
 client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
@@ -87,6 +86,23 @@ client.on('guildCreate', async (guild) => {
         await CommandSettings.bulkCreate(commands);
     }
 });
+
+
+
+client.on('messageCreate', async (message) => {
+    // Empêche le bot de répondre à ses propres messages
+    if (message.author.bot) return;
+
+    // Vérifie si le message mentionne le bot
+    if (message.mentions.has(client.user)) {
+        // Crée une pièce jointe avec le GIF local
+        const gifPath = path.join(__dirname, 'images/ooze.gif'); // Remplacez 'monGif.gif' par le nom de votre fichier
+        const attachment = new AttachmentBuilder(gifPath);
+
+        await message.reply({ files: [attachment] });
+    }
+});
+
 
 // Ready up
 client.once(Events.ClientReady, readyClient => {
