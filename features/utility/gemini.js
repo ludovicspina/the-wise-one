@@ -23,7 +23,12 @@ module.exports = {
             const result = await model.generateContent(question);
             const response = result.response.text();
 
-            await interaction.editReply(response);
+            // Diviser le message en segments de 2000 caractères
+            const messages = response.match(/[\s\S]{1,2000}/g);
+
+            for (const msg of messages) {
+                await interaction.followUp(msg);
+            }
         } catch (error) {
             console.error(error);
             await interaction.editReply("Une erreur est survenue lors de la requête à l'API Gemini.");
