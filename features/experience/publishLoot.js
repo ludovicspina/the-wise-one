@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField} = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,6 +6,13 @@ module.exports = {
         .setDescription("Prépare le loot pour la distribution."),
     async execute(interaction) {
         try {
+            // Vérification des permissions d'administrateur
+            const { PermissionsBitField } = require('discord.js');
+
+            if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+                return interaction.reply({ content: 'Seuls les administrateurs peuvent utiliser cette commande.', ephemeral: true });
+            }
+
             // Informer l'utilisateur de fournir les pièces jointes après la commande
             await interaction.reply({
                 content: "Envoyez les images du loot en pièces jointes dans ce salon.",

@@ -6,6 +6,7 @@ const User = require('./database/models/User');
 const foldersPath = path.join(__dirname, 'features');
 const commandFolders = fs.readdirSync(foldersPath);
 const Guild = require('./database/models/Guild');
+
 require("dotenv").config();
 
 // Intents
