@@ -1,9 +1,10 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+const { clientId, guildIds, token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const commands = [];
+
 // Récupérer tous les dossiers de commandes du répertoire features
 const foldersPath = path.join(__dirname, 'features');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -27,18 +28,18 @@ for (const folder of commandFolders) {
 // Préparer une instance du module REST
 const rest = new REST().setToken(token);
 
-// Déployer les commandes dans le serveur spécifique
+// Déployer les commandes dans tous les serveurs spécifiques
 (async () => {
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        // Le put est utilisé pour rafraîchir toutes les commandes d'application du serveur
-        const data = await rest.put(
-            Routes.applicationGuildCommands(clientId, guildId),
-            { body: commands },
-        );
-
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        for (const guildId of guildIds) {
+            const data = await rest.put(
+                Routes.applicationGuildCommands(clientId, guildId),
+                { body: commands },
+            );
+            console.log(`Successfully reloaded ${data.length} application (/) commands for guild ${guildId}.`);
+        }
     } catch (error) {
         console.error(error);
     }

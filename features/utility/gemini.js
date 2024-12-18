@@ -23,7 +23,10 @@ module.exports = {
             const result = await model.generateContent(question);
             const response = result.response.text();
 
-            // Diviser le message en segments de 2000 caractères
+            // Affiche la question avant la réponse
+            await interaction.editReply(`**Question :** ${question}`);
+
+            // Diviser la réponse en segments de 2000 caractères
             const messages = response.match(/[\s\S]{1,2000}/g);
 
             for (const msg of messages) {
