@@ -21,7 +21,7 @@ module.exports = {
             const { bois, nourriture, pierre, pieces_or } = utilisateur;
 
             return interaction.reply({
-                content: `Vos ressources actuelles :\n\n💰 **Pièces d'or** : ${pieces_or}\n🪵 **Bois** : ${bois}\n🍖 **Nourriture** : ${nourriture}\n🪨 **Pierre** : ${pierre}`,
+                content: `Vos ressources actuelles :\n\n<:gs_coin:1319679652481994752> **Pièces d'or** : ${pieces_or}\n<:gs_stick:1319679605417840700> **Bois** : ${bois}\n<:gs_bread:1319679637395079188> **Nourriture** : ${nourriture}\n<:gs_rock:1319679707079245906> **Pierre** : ${pierre}`,
                 ephemeral: true,
             });
 

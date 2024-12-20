@@ -20,9 +20,6 @@ module.exports = {
                     { name: 'Scierie (bois)', value: 'scierie' },
                     { name: 'Champ (nourriture)', value: 'champ' },
                     { name: 'Mine (pierre)', value: 'mine' }
-                    // { name: 'Temple (capitale)', value: 'temple' },
-                    // { name: 'Bibliothèque (capitale)', value: 'bibliotheque' },
-                    // { name: 'Caserne (capitale)', value: 'caserne' }
                 )),
 
     async execute(interaction) {
@@ -38,11 +35,53 @@ module.exports = {
                 return interaction.reply({ content: `La ville "${nomVille}" n'existe pas.`, ephemeral: true });
             }
 
+            // Trouver l'utilisateur
+            const utilisateur = await DeiUtilisateur.findOne({ where: { id: userId } });
+            if (!utilisateur) {
+                return interaction.reply({ content: 'Utilisateur introuvable.', ephemeral: true });
+            }
+
             // Vérifier le nombre d'emplacements existants dans la ville
             const emplacementsExistants = await DeiEmplacement.count({ where: { ville_id: ville.id } });
 
             if (emplacementsExistants >= ville.niveau) {
                 return interaction.reply({ content: `La ville "${nomVille}" ne peut pas avoir plus de ${ville.niveau} emplacements (1 par niveau).`, ephemeral: true });
+            }
+
+            // Définir les coûts en fonction du type de structure
+            let coutPieces = 1000;
+            let coutBois = 0;
+            let coutPierre = 0;
+            let coutNourriture = 0;
+
+            switch (typeStructure) {
+                case 'scierie':
+                    coutPierre = 200;
+                    coutNourriture = 100;
+                    break;
+                case 'mine':
+                    coutBois = 200;
+                    coutNourriture = 100;
+                    break;
+                case 'champ':
+                    coutPierre = 100;
+                    coutBois = 100;
+                    break;
+                default:
+                    return interaction.reply({ content: 'Type de structure invalide.', ephemeral: true });
+            }
+
+            // Vérifier si l'utilisateur a assez de ressources
+            if (
+                utilisateur.pieces_or < coutPieces ||
+                utilisateur.bois < coutBois ||
+                utilisateur.pierre < coutPierre ||
+                utilisateur.nourriture < coutNourriture
+            ) {
+                return interaction.reply({
+                    content: `Vous n'avez pas assez de ressources pour construire "${typeStructure}".\nCoût : ${coutPieces} pièces, ${coutBois} bois, ${coutPierre} pierres, ${coutNourriture} nourriture.`,
+                    ephemeral: true
+                });
             }
 
             // Trouver le bâtiment correspondant au type de structure sélectionné
@@ -51,6 +90,13 @@ module.exports = {
             if (!batiment) {
                 return interaction.reply({ content: `Le bâtiment pour la structure "${typeStructure}" n'existe pas dans la base de données.`, ephemeral: true });
             }
+
+            // Déduire les ressources nécessaires
+            utilisateur.pieces_or -= coutPieces;
+            utilisateur.bois -= coutBois;
+            utilisateur.pierre -= coutPierre;
+            utilisateur.nourriture -= coutNourriture;
+            await utilisateur.save();
 
             // Créer l'emplacement pour la structure avec le type et l'ID du bâtiment
             await DeiEmplacement.create({
@@ -61,7 +107,10 @@ module.exports = {
                 niveau: 1
             });
 
-            return interaction.reply({ content: `La structure "${typeStructure}" a été construite dans la ville "${nomVille}".`, ephemeral: true });
+            return interaction.reply({
+                content: `La structure "${typeStructure}" a été construite dans la ville "${nomVille}".\nRessources dépensées : ${coutPieces} pièces, ${coutBois} bois, ${coutPierre} pierres, ${coutNourriture} nourriture.`,
+                ephemeral: true
+            });
 
         } catch (error) {
             console.error(error);

@@ -38,7 +38,7 @@ module.exports = {
             let utilisateur = await DeiUtilisateur.findOne({ where: { id: userId } });
 
             if (!utilisateur) {
-                utilisateur = await DeiUtilisateur.create({ id: userId, nom_rp: username, pieces_or: 100000, nourriture: 1000 });
+                utilisateur = await DeiUtilisateur.create({ id: userId, nom_rp: username, pieces_or: 100000, nourriture: 1000, pierre: 1000, bois: 1000 });
             }
 
             if (subcommand === 'create') {
