@@ -2,10 +2,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {Client, Events, GatewayIntentBits, Collection, AttachmentBuilder} = require('discord.js');
 const sequelize = require('./database/database');
-const User = require('./database/models/User');
 const foldersPath = path.join(__dirname, 'features');
 const commandFolders = fs.readdirSync(foldersPath);
-const Guild = require('./database/models/Guild');
+const DeiUtilisateur = require('./database/models/dei_utilisateurs.js');
+const DeiRoyaume = require('./database/models/dei_royaumes');
+const DeiVille = require('./database/models/dei_villes');
+const DeiEmplacement = require('./database/models/dei_emplacements');
+const DeiTransaction = require('./database/models/dei_transactions');
 
 require("dotenv").config();
 
@@ -19,6 +22,28 @@ const client = new Client({
     ],
 
 });
+
+// Relations
+DeiUtilisateur.hasMany(DeiRoyaume, { foreignKey: 'utilisateur_id' });
+DeiRoyaume.belongsTo(DeiUtilisateur, { foreignKey: 'utilisateur_id' });
+
+DeiRoyaume.hasMany(DeiVille, { foreignKey: 'royaume_id' });
+DeiVille.belongsTo(DeiRoyaume, { foreignKey: 'royaume_id' });
+
+DeiVille.hasMany(DeiEmplacement, { foreignKey: 'ville_id' });
+DeiEmplacement.belongsTo(DeiVille, { foreignKey: 'ville_id' });
+
+DeiUtilisateur.hasMany(DeiTransaction, { foreignKey: 'utilisateur_id' });
+DeiTransaction.belongsTo(DeiUtilisateur, { foreignKey: 'utilisateur_id' });
+
+module.exports = {
+    DeiUtilisateur,
+    DeiRoyaume,
+    DeiVille,
+    DeiEmplacement,
+    DeiTransaction,
+};
+
 
 // Syncro DB
 sequelize.sync().then(() => {
