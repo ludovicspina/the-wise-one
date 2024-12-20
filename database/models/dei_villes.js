@@ -23,7 +23,18 @@ const DeiVille = sequelize.define('dei_villes', {
     },
     revenu_quotidien: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
+        defaultValue: 1000,
+    },
+    niveau: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+        validate: {
+            max: 3,
+        },
+    },
+    capitale: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
     },
 }, {
     timestamps: false,

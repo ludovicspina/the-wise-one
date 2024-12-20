@@ -10,6 +10,8 @@ const DeiVille = require('./database/models/dei_villes');
 const DeiEmplacement = require('./database/models/dei_emplacements');
 const DeiTransaction = require('./database/models/dei_transactions');
 
+const { updateDailyIncome } = require('./tasks/dailyIncome');
+
 require("dotenv").config();
 
 // Intents

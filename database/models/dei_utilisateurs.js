@@ -3,7 +3,7 @@ const sequelize = require('../database');
 
 const DeiUtilisateur = sequelize.define('dei_utilisateurs', {
     id: {
-        type: DataTypes.BIGINT,  // Changer INTEGER en BIGINT
+        type: DataTypes.BIGINT,
         primaryKey: true,
     },
     nom_rp: {
@@ -15,11 +15,15 @@ const DeiUtilisateur = sequelize.define('dei_utilisateurs', {
         type: DataTypes.INTEGER,
         defaultValue: 0,
     },
-    ressource_1: {
+    bois: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
     },
-    ressource_2: {
+    nourriture: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
+    pierre: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
     },

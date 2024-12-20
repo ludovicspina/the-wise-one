@@ -14,21 +14,15 @@ const DeiBatiment = sequelize.define('dei_batiments', {
     },
     type: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: false, // Exemples : "production", "special"
     },
     bonus_revenu: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
     },
-    cout_construction: {
-        type: DataTypes.JSONB,
-    },
-    statistiques: {
-        type: DataTypes.JSONB,
-    },
     niveau_max: {
         type: DataTypes.INTEGER,
-        defaultValue: 1,
+        defaultValue: 3,
     },
 }, {
     timestamps: false,
